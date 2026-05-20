@@ -47,6 +47,39 @@ apriltag-generate-image -f tag36h11 -d 1 0
 Stick it on the top face of the cube. The detection pose origin sits at
 the **tag centre**, with z pointing out of the tag face.
 
+## Prerequisites
+
+### ROS packages
+
+```bash
+# AprilTag detector (the heavy lifting — detection + pose estimation)
+sudo apt install ros-noetic-apriltag-ros
+
+# tf2 helpers used by the adapter (usually pre-installed with ROS desktop)
+sudo apt install ros-noetic-tf2-ros ros-noetic-tf2-geometry-msgs
+```
+
+Or, from inside the workspace, let `rosdep` resolve everything declared
+in `package.xml`:
+
+```bash
+cd ~/rl_ws
+rosdep install --from-paths src --ignore-src -r -y
+```
+
+### Camera driver (provided by you)
+
+The launch files assume the appropriate camera driver is already
+publishing rectified images + camera_info on the expected namespace:
+
+- **kinect2.launch** expects `/kinect2/qhd/image_color_rect` +
+  `/kinect2/qhd/camera_info` (default `iai_kinect2 / kinect2_bridge`
+  layout).
+- **zed2.launch** expects `/zed2/zed_node/rgb/image_rect_color` +
+  `/zed2/zed_node/rgb/camera_info` (default `zed_wrapper` layout).
+
+Both can be overridden via the `camera_ns` / `image_topic` launch args.
+
 ## Quick start
 
 ### 1. Build
