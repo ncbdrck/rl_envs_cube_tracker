@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rl_envs_cube_tracker</name>
+  <version>0.1.0</version>
+  <description>
+    Real-side cube pose publisher for rl_environments push / PnP task envs.
+    Wraps apriltag_ros and republishes the detected cube tag as a
+    geometry_msgs/PoseStamped on /cube_pose (optionally TF-transformed into
+    the robot base frame). Robot-agnostic — works with RX200, NED2, UR5e.
+  </description>
+
+  <maintainer email="j.kapukotuwa@research.ait.ie">Jay Kapukotuwa</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>apriltag_ros</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+</package>

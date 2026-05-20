@@ -1,0 +1,11 @@
+# apriltag_ros detector parameters.
+# See apriltag/include/apriltag.h for full descriptions.
+tag_family:        'tag36h11'  # robust default; same family as our tags.yaml
+tag_threads:       2
+tag_decimate:      1.0          # 2.0 trades precision for speed if CPU-bound
+tag_blur:          0.0
+tag_refine_edges:  1
+tag_debug:         0
+max_hamming_dist:  2
+publish_tf:        true         # we don't rely on this, but useful for rviz
+transport_hint:    "raw"

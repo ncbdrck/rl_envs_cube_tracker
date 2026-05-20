@@ -1,0 +1,13 @@
+# apriltag_ros tag definitions for rl_envs_cube_tracker.
+#
+# size = length of the shared border between solid black and solid white,
+# in metres. For a 30 mm inner-border tag printed with a ~10 mm quiet zone
+# (≈50 mm total sticker), size = 0.030.
+#
+# ID 0 of the tag36h11 family is the default cube tag. Add more IDs here
+# if you want to track multiple cubes — tag_to_cube_pose.py picks the
+# entry matching its ~cube_tag_id param.
+standalone_tags:
+  [
+    {id: 0, size: 0.030, name: cube},
+  ]

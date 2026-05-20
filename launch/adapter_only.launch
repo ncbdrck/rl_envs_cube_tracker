@@ -1,0 +1,22 @@
+<launch>
+  <!--
+    Adapter-only: assumes apriltag_ros (or any node publishing
+    /tag_detections) is already running. Useful if you've already wired
+    apriltag_ros into your robot's bringup, or you're using a custom
+    detector that emits AprilTagDetectionArray.
+  -->
+  <arg name="cube_tag_id"     default="0"/>
+  <arg name="target_frame"    default=""/>
+  <arg name="detections_topic" default="/tag_detections"/>
+  <arg name="output_topic"    default="/cube_pose"/>
+  <arg name="rate_limit_hz"   default="0.0"/>
+
+  <node pkg="rl_envs_cube_tracker" type="tag_to_cube_pose.py"
+        name="tag_to_cube_pose" output="screen">
+    <param name="cube_tag_id"   value="$(arg cube_tag_id)"/>
+    <param name="target_frame"  value="$(arg target_frame)"/>
+    <param name="rate_limit_hz" value="$(arg rate_limit_hz)"/>
+    <remap from="~detections"   to="$(arg detections_topic)"/>
+    <remap from="~cube_pose"    to="$(arg output_topic)"/>
+  </node>
+</launch>
