@@ -8,6 +8,8 @@ catkin_package()
 catkin_install_python(PROGRAMS
   scripts/tag_to_cube_pose.py
   scripts/publish_camera_tf.py
+  scripts/fake_tag_publisher.py
+  scripts/check_cube_pose.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

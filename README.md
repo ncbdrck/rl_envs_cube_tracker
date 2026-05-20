@@ -164,7 +164,8 @@ rl_envs_cube_tracker/
 ├── launch/
 │   ├── kinect2.launch        # apriltag_ros + adapter + TF, kinect2 topics
 │   ├── zed2.launch           # apriltag_ros + adapter + TF, zed2 topics
-│   └── adapter_only.launch   # adapter alone, BYO detector
+│   ├── adapter_only.launch   # adapter alone, BYO detector
+│   └── e2e_dry_run.launch    # headless self-test: fake → adapter → check
 ├── config/
 │   ├── tags.yaml             # tag IDs + sizes (default: id 0, 30 mm)
 │   ├── settings.yaml         # apriltag detector params (tag36h11)
@@ -174,8 +175,43 @@ rl_envs_cube_tracker/
 │       └── README.md         # calibration procedures
 └── scripts/
     ├── tag_to_cube_pose.py   # AprilTagDetectionArray → PoseStamped
-    └── publish_camera_tf.py  # loads extrinsic YAML → /tf_static
+    ├── publish_camera_tf.py  # loads extrinsic YAML → /tf_static
+    ├── fake_tag_publisher.py # dry-run only: synthetic detections
+    └── check_cube_pose.py    # dry-run only: subscribe + PASS/FAIL gate
 ```
+
+## End-to-end dry-run (no camera, no robot)
+
+Verify the whole adapter + TF chain works before plugging in hardware.
+Two terminals:
+
+```bash
+# 1. roscore
+roscore
+
+# 2. Dry-run (no TF — verifies adapter pass-through in camera frame)
+roslaunch rl_envs_cube_tracker e2e_dry_run.launch
+
+# 2b. With TF chain (verifies the camera_optical → robot_base transform)
+roslaunch rl_envs_cube_tracker e2e_dry_run.launch \
+    target_frame:=rx200/base_link publish_extrinsic_tf:=true
+```
+
+The launch:
+
+- `fake_tag_publisher.py` — emits a fake `AprilTagDetectionArray` on
+  `/tag_detections` at 20 Hz (no camera or apriltag_ros needed).
+- `tag_to_cube_pose.py` — adapter under test.
+- `publish_camera_tf.py` — when enabled, spawns the static TF.
+- `check_cube_pose.py` — subscribes to `/cube_pose` for `duration` s,
+  prints `PASS` / `FAIL`, then exits. `required="true"` makes
+  roslaunch tear the whole rig down on exit.
+
+Useful args: `duration` (s), `hz`, `min_count`, `fake_position`,
+`target_frame`, `publish_extrinsic_tf`.
+
+Use this as a regression test after touching `tag_to_cube_pose.py` or
+the extrinsic YAMLs.
 
 ## Sim?
 

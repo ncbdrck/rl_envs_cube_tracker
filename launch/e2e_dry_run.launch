@@ -1,0 +1,73 @@
+<launch>
+  <!--
+    End-to-end dry-run for rl_envs_cube_tracker. Verifies the
+    fake-tag-publisher → adapter → /cube_pose chain (and the TF
+    broadcaster, when enabled) without needing a camera or robot.
+
+    Usage:
+      # 1. roscore (separate terminal)
+      roscore
+
+      # 2. Dry-run:
+      roslaunch rl_envs_cube_tracker e2e_dry_run.launch
+      # Watch for "[check_cube_pose] PASS" — roslaunch tears down on exit.
+
+      # With TF chain (rx200/base_link target frame):
+      roslaunch rl_envs_cube_tracker e2e_dry_run.launch \
+          target_frame:=rx200/base_link publish_extrinsic_tf:=true
+
+    The `check_cube_pose` node has `required="true"` so roslaunch
+    terminates the whole rig when the check completes.
+  -->
+
+  <arg name="duration"             default="3.0"/>
+  <arg name="hz"                   default="20.0"/>
+  <arg name="min_count"            default="10"/>
+  <arg name="target_frame"         default=""/>
+  <arg name="publish_extrinsic_tf" default="false"/>
+  <arg name="extrinsic_file"
+       default="$(find rl_envs_cube_tracker)/config/extrinsics/kinect2_to_rx200.yaml"/>
+  <arg name="fake_position"        default="[0.25, 0.0, 0.50]"/>
+
+  <!-- 1. Fake AprilTag publisher (replaces the camera + apriltag_ros). -->
+  <node pkg="rl_envs_cube_tracker" type="fake_tag_publisher.py"
+        name="fake_tag_publisher" output="screen">
+    <param name="hz"        value="$(arg hz)"/>
+    <rosparam param="position" subst_value="true">$(arg fake_position)</rosparam>
+  </node>
+
+  <!-- 2. Adapter under test. -->
+  <node pkg="rl_envs_cube_tracker" type="tag_to_cube_pose.py"
+        name="tag_to_cube_pose" output="screen">
+    <param name="cube_tag_id"  value="0"/>
+    <param name="target_frame" value="$(arg target_frame)"/>
+    <remap from="~detections"  to="/tag_detections"/>
+    <remap from="~cube_pose"   to="/cube_pose"/>
+  </node>
+
+  <!-- 3. Optional TF broadcaster (only when target_frame is set). -->
+  <node if="$(arg publish_extrinsic_tf)"
+        pkg="rl_envs_cube_tracker" type="publish_camera_tf.py"
+        name="kinect2_extrinsic_tf" output="screen">
+    <param name="extrinsic_file" value="$(arg extrinsic_file)"/>
+  </node>
+
+  <!-- 4. Checker (PASS/FAIL gate; required=true → tears down on exit).
+       clear_params clears any stale ~params from a previous run so
+       expected_position from a no-TF run doesn't leak into a TF run. -->
+  <node pkg="rl_envs_cube_tracker" type="check_cube_pose.py"
+        name="check_cube_pose" output="screen" required="true"
+        clear_params="true">
+    <param name="duration"  value="$(arg duration)"/>
+    <param name="min_count" value="$(arg min_count)"/>
+    <!--
+      Position check only when no TF transform is applied — otherwise the
+      expected coords would depend on the (calibrate-before-use) extrinsic.
+      Frame check confirms the transform was applied at all.
+    -->
+    <rosparam param="expected_position" subst_value="true"
+              if="$(eval target_frame == '')">$(arg fake_position)</rosparam>
+    <param name="expected_frame_id" value="$(arg target_frame)"
+           if="$(eval target_frame != '')"/>
+  </node>
+</launch>
