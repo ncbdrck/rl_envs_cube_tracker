@@ -1,0 +1,17 @@
+# Static transform: rx200/base_link → zed2 left RGB optical frame.
+#
+# *** CALIBRATE BEFORE USING ON HARDWARE. ***
+# See config/extrinsics/README.md for procedures.
+
+parent_frame: rx200/base_link
+child_frame:  zed2_left_camera_optical_frame
+
+translation:
+  x:  0.50
+  y:  0.00
+  z:  0.50
+
+rotation_rpy_deg:
+  roll:  -90.0
+  pitch:   0.0
+  yaw:   -60.0

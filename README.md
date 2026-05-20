@@ -98,8 +98,31 @@ roslaunch rl_envs_cube_tracker kinect2.launch \
 ```
 
 This requires the `camera_optical → rx200/base_link` TF chain to be
-populated (camera extrinsic calibration). Without it, the adapter logs
-a throttled warning and drops the message.
+populated. The launch files include a small TF broadcaster
+(`publish_camera_tf.py`) that loads the camera extrinsic from a YAML
+in `config/extrinsics/` and publishes it on `/tf_static`. **You must
+calibrate that YAML for your camera mount before the published
+`/cube_pose` will be accurate** — the shipped values are placeholders.
+
+Calibration procedures (tape measure, RViz nudging, hand-eye) are in
+[`config/extrinsics/README.md`](config/extrinsics/README.md).
+
+If your robot URDF / `robot_state_publisher` already provides the
+camera_optical → base_link TF, suppress the broadcaster:
+
+```bash
+roslaunch rl_envs_cube_tracker kinect2.launch \
+    target_frame:=rx200/base_link \
+    publish_extrinsic_tf:=false
+```
+
+To point at a different extrinsic file (e.g. a second mount calibration):
+
+```bash
+roslaunch rl_envs_cube_tracker kinect2.launch \
+    target_frame:=rx200/base_link \
+    extrinsic_file:=$(rospack find my_setup)/config/kinect2_mount_b.yaml
+```
 
 ## All launch args
 
@@ -111,6 +134,8 @@ Common to all launches:
 | `target_frame` | `""` | If non-empty, TF-transform the pose into this frame. |
 | `output_topic` | `/cube_pose` | Where the env subscribes. |
 | `rate_limit_hz` | `0.0` | If > 0, throttle to this rate. Default = no throttle. |
+| `publish_extrinsic_tf` | `true` | Spawn the camera TF broadcaster. Disable if your URDF already publishes the chain. |
+| `extrinsic_file` | `config/extrinsics/<camera>_to_rx200.yaml` | Calibration YAML loaded by the broadcaster. |
 
 `kinect2.launch` / `zed2.launch` also accept `camera_ns` + `image_topic`
 overrides if your bringup uses a non-default base name.
@@ -137,14 +162,19 @@ rl_envs_cube_tracker/
 ├── package.xml
 ├── CMakeLists.txt
 ├── launch/
-│   ├── kinect2.launch        # apriltag_ros + adapter, kinect2 topics
-│   ├── zed2.launch           # apriltag_ros + adapter, zed2 topics
+│   ├── kinect2.launch        # apriltag_ros + adapter + TF, kinect2 topics
+│   ├── zed2.launch           # apriltag_ros + adapter + TF, zed2 topics
 │   └── adapter_only.launch   # adapter alone, BYO detector
 ├── config/
 │   ├── tags.yaml             # tag IDs + sizes (default: id 0, 30 mm)
-│   └── settings.yaml         # apriltag detector params (tag36h11)
+│   ├── settings.yaml         # apriltag detector params (tag36h11)
+│   └── extrinsics/           # per-camera-per-robot static TF YAMLs
+│       ├── kinect2_to_rx200.yaml
+│       ├── zed2_to_rx200.yaml
+│       └── README.md         # calibration procedures
 └── scripts/
-    └── tag_to_cube_pose.py   # AprilTagDetectionArray → PoseStamped
+    ├── tag_to_cube_pose.py   # AprilTagDetectionArray → PoseStamped
+    └── publish_camera_tf.py  # loads extrinsic YAML → /tf_static
 ```
 
 ## Sim?

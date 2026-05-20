@@ -1,0 +1,34 @@
+# Static transform: rx200/base_link → kinect2 RGB optical frame.
+#
+# The cube tracker's adapter (tag_to_cube_pose.py) uses this transform
+# when target_frame=rx200/base_link is requested: it lets the tracker
+# emit /cube_pose in the robot's base frame instead of the camera frame.
+#
+# *** CALIBRATE BEFORE USING ON HARDWARE. ***
+# The values below are placeholders for a kinect mounted ~0.50 m in
+# front of the robot base and ~0.50 m above, tilted ~30° downward. The
+# real numbers depend on your mount.
+#
+# How to measure / calibrate: see config/extrinsics/README.md
+
+parent_frame: rx200/base_link
+child_frame:  kinect2_rgb_optical_frame
+
+# Camera origin in the parent (robot base) frame. Metres.
+translation:
+  x:  0.50    # forward of base_link
+  y:  0.00    # centered laterally
+  z:  0.50    # above base_link
+
+# Camera orientation w.r.t. parent. ROS XYZ extrinsic Roll-Pitch-Yaw.
+# Degrees (we convert to radians internally).
+#
+# Optical-frame convention: +z out of the lens (viewing direction),
+# +x image-right, +y image-down. So for a camera tilted ~30° down
+# looking forward from a tripod, you typically end up around
+# roll=-90 (so z_optical no longer points up), pitch=0, yaw=-60
+# (-90 for pure top-down, less for tilted-forward). Calibrate.
+rotation_rpy_deg:
+  roll:  -90.0
+  pitch:   0.0
+  yaw:   -60.0

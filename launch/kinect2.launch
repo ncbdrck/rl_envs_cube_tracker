@@ -21,6 +21,11 @@
   <arg name="rate_limit_hz"   default="0.0"/>
   <arg name="node_namespace"  default="apriltag_ros_continuous_node"/>
 
+  <!-- Camera extrinsic. Set publish_extrinsic_tf:=false if your URDF /
+       robot_state_publisher already provides the camera_optical TF chain. -->
+  <arg name="publish_extrinsic_tf" default="true"/>
+  <arg name="extrinsic_file"  default="$(find rl_envs_cube_tracker)/config/extrinsics/kinect2_to_rx200.yaml"/>
+
   <!-- apriltag_ros detector (tag36h11, our tags.yaml + settings.yaml). -->
   <rosparam command="load" file="$(find rl_envs_cube_tracker)/config/settings.yaml"
             ns="$(arg node_namespace)"/>
@@ -42,5 +47,13 @@
     <param name="rate_limit_hz" value="$(arg rate_limit_hz)"/>
     <remap from="~detections"   to="/tag_detections"/>
     <remap from="~cube_pose"    to="$(arg output_topic)"/>
+  </node>
+
+  <!-- Camera extrinsic TF: rx200/base_link → kinect2_rgb_optical_frame.
+       Edit the YAML to match your mount; see config/extrinsics/README.md. -->
+  <node if="$(arg publish_extrinsic_tf)"
+        pkg="rl_envs_cube_tracker" type="publish_camera_tf.py"
+        name="kinect2_extrinsic_tf" output="screen">
+    <param name="extrinsic_file" value="$(arg extrinsic_file)"/>
   </node>
 </launch>
