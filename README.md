@@ -57,6 +57,11 @@ sudo apt install ros-noetic-apriltag-ros
 
 # tf2 helpers used by the adapter (usually pre-installed with ROS desktop)
 sudo apt install ros-noetic-tf2-ros ros-noetic-tf2-geometry-msgs
+
+# Camera driver — pick whichever you actually mount:
+sudo apt install ros-noetic-realsense2-camera   # Intel RealSense (D405 etc.)
+# kinect2_bridge from iai_kinect2 — source build, see its README
+# zed_wrapper from stereolabs/zed-ros-wrapper   — source build
 ```
 
 Or, from inside the workspace, let `rosdep` resolve everything declared
@@ -77,8 +82,13 @@ publishing rectified images + camera_info on the expected namespace:
   layout).
 - **zed2.launch** expects `/zed2/zed_node/rgb/image_rect_color` +
   `/zed2/zed_node/rgb/camera_info` (default `zed_wrapper` layout).
+- **d405.launch** expects `/camera/color/image_raw` +
+  `/camera/color/camera_info` (default `realsense2_camera /
+  rs_camera.launch` layout; the SDK rectifies before publishing
+  `image_raw`).
 
-Both can be overridden via the `camera_ns` / `image_topic` launch args.
+All three can be overridden via the `camera_ns` / `image_topic`
+launch args.
 
 ## Quick start
 
@@ -102,6 +112,13 @@ ZED2 (assumes `zed_wrapper` already running on `/zed2/zed_node`):
 
 ```bash
 roslaunch rl_envs_cube_tracker zed2.launch
+```
+
+Intel RealSense D405 (assumes `realsense2_camera` already running on
+`/camera`):
+
+```bash
+roslaunch rl_envs_cube_tracker d405.launch
 ```
 
 Already have your own apriltag_ros / detector publishing `/tag_detections`?
@@ -197,6 +214,7 @@ rl_envs_cube_tracker/
 ├── launch/
 │   ├── kinect2.launch        # apriltag_ros + adapter + TF, kinect2 topics
 │   ├── zed2.launch           # apriltag_ros + adapter + TF, zed2 topics
+│   ├── d405.launch           # apriltag_ros + adapter + TF, RealSense D405
 │   ├── adapter_only.launch   # adapter alone, BYO detector
 │   └── e2e_dry_run.launch    # headless self-test: fake → adapter → check
 ├── config/
@@ -204,7 +222,11 @@ rl_envs_cube_tracker/
 │   ├── settings.yaml         # apriltag detector params (tag36h11)
 │   └── extrinsics/           # per-camera-per-robot static TF YAMLs
 │       ├── kinect2_to_rx200.yaml
+│       ├── kinect2_to_ned2.yaml
 │       ├── zed2_to_rx200.yaml
+│       ├── zed2_to_ned2.yaml
+│       ├── d405_to_rx200.yaml
+│       ├── d405_to_ned2.yaml
 │       └── README.md         # calibration procedures
 └── scripts/
     ├── tag_to_cube_pose.py   # AprilTagDetectionArray → PoseStamped

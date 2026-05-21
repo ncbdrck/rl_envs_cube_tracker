@@ -17,9 +17,13 @@ serves both.
 
 Currently shipped:
 - `kinect2_to_rx200.yaml`
+- `kinect2_to_ned2.yaml`
 - `zed2_to_rx200.yaml`
+- `zed2_to_ned2.yaml`
+- `d405_to_rx200.yaml`   (Intel RealSense D405)
+- `d405_to_ned2.yaml`
 
-Add `kinect2_to_ned2.yaml`, etc., when those robots come online.
+All values are placeholders — calibrate before use.
 
 ## File format
 

@@ -1,0 +1,60 @@
+<launch>
+  <!--
+    rl_envs_cube_tracker: detect the cube tag with apriltag_ros on an
+    Intel RealSense D405 color stream and republish on /cube_pose.
+
+    Assumes a realsense2_camera node (rs_camera.launch) is already
+    running and publishing under /camera (the default camera name).
+    Topics expected:
+      /camera/color/image_raw   sensor_msgs/Image (rectified by the SDK)
+      /camera/color/camera_info sensor_msgs/CameraInfo
+
+    Bring-up example (one terminal up the stack):
+      sudo apt install ros-noetic-realsense2-camera
+      roslaunch realsense2_camera rs_camera.launch
+  -->
+
+  <arg name="camera_ns"       default="/camera/color"/>
+  <arg name="image_topic"     default="image_raw"/>
+
+  <arg name="cube_tag_id"     default="0"/>
+  <arg name="target_frame"    default=""/>
+  <arg name="output_topic"    default="/cube_pose"/>
+  <arg name="rate_limit_hz"   default="0.0"/>
+  <arg name="node_namespace"  default="apriltag_ros_continuous_node"/>
+
+  <!-- Camera extrinsic. Default points at the RX200 D405 calibration —
+       swap to d405_to_ned2.yaml for the Ned2. -->
+  <arg name="publish_extrinsic_tf" default="true"/>
+  <arg name="extrinsic_file"
+       default="$(find rl_envs_cube_tracker)/config/extrinsics/d405_to_rx200.yaml"/>
+
+  <rosparam command="load" file="$(find rl_envs_cube_tracker)/config/settings.yaml"
+            ns="$(arg node_namespace)"/>
+  <rosparam command="load" file="$(find rl_envs_cube_tracker)/config/tags.yaml"
+            ns="$(arg node_namespace)"/>
+
+  <node pkg="apriltag_ros" type="apriltag_ros_continuous_node"
+        name="$(arg node_namespace)" clear_params="true" output="screen">
+    <remap from="image_rect" to="$(arg camera_ns)/$(arg image_topic)"/>
+    <remap from="camera_info" to="$(arg camera_ns)/camera_info"/>
+    <param name="publish_tag_detections_image" type="bool" value="true"/>
+  </node>
+
+  <node pkg="rl_envs_cube_tracker" type="tag_to_cube_pose.py"
+        name="tag_to_cube_pose" output="screen">
+    <param name="cube_tag_id"   value="$(arg cube_tag_id)"/>
+    <param name="target_frame"  value="$(arg target_frame)"/>
+    <param name="rate_limit_hz" value="$(arg rate_limit_hz)"/>
+    <remap from="~detections"   to="/tag_detections"/>
+    <remap from="~cube_pose"    to="$(arg output_topic)"/>
+  </node>
+
+  <!-- Camera extrinsic TF: {parent}/base_link → camera_color_optical_frame.
+       Edit the YAML to match your mount; see config/extrinsics/README.md. -->
+  <node if="$(arg publish_extrinsic_tf)"
+        pkg="rl_envs_cube_tracker" type="publish_camera_tf.py"
+        name="d405_extrinsic_tf" output="screen">
+    <param name="extrinsic_file" value="$(arg extrinsic_file)"/>
+  </node>
+</launch>

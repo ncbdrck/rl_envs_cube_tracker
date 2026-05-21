@@ -1,0 +1,24 @@
+# Static transform: NED2 base_link → kinect2 RGB optical frame.
+#
+# Same role as kinect2_to_rx200.yaml — see that file for the full
+# rationale. NED2's real bring-up loads the URDF on bare link names
+# (no `ned2/` namespace, unlike the sim URDF). Parent frame is
+# therefore `base_link`, not `ned2/base_link`.
+#
+# *** CALIBRATE BEFORE USING ON HARDWARE. ***
+# Placeholder values match the RX200 kinect2 mount pose since both
+# robots sit on the same desk in the lab — adjust if your physical
+# camera moves.
+
+parent_frame: base_link
+child_frame:  kinect2_rgb_optical_frame
+
+translation:
+  x:  0.50
+  y:  0.00
+  z:  0.50
+
+rotation_rpy_deg:
+  roll:  -90.0
+  pitch:   0.0
+  yaw:   -60.0
