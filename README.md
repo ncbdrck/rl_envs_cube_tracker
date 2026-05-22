@@ -19,8 +19,6 @@ whichever camera you're using and (optionally) the robot's base frame.
                                                               │
                                                               ▼
                                               rl_environments real envs
-                                              (RX200{Push,PnP}Real-v0,
-                                               NED2 + UR5e analogues later)
 ```
 
 The adapter (`tag_to_cube_pose.py`) picks the cube's tag ID out of the
