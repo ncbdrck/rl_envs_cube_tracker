@@ -21,6 +21,14 @@
   <arg name="rate_limit_hz"   default="0.0"/>
   <arg name="node_namespace"  default="apriltag_ros_continuous_node"/>
 
+  <!-- Optional second adapter: same apriltag_ros pipeline, picks a
+       different tag ID and publishes to a second PoseStamped topic. Used
+       by the push real env to track a physical "goal" tag stuck on the
+       desk so the user can change the push target without editing code. -->
+  <arg name="enable_goal_tracker" default="false"/>
+  <arg name="goal_tag_id"         default="1"/>
+  <arg name="goal_output_topic"   default="/goal_pose"/>
+
   <!-- Camera extrinsic. Set publish_extrinsic_tf:=false if your URDF /
        robot_state_publisher already provides the camera_optical TF chain. -->
   <arg name="publish_extrinsic_tf" default="true"/>
@@ -47,6 +55,18 @@
     <param name="rate_limit_hz" value="$(arg rate_limit_hz)"/>
     <remap from="~detections"   to="/tag_detections"/>
     <remap from="~cube_pose"    to="$(arg output_topic)"/>
+  </node>
+
+  <!-- Optional adapter: tag_detections → /goal_pose. Same node binary,
+       different tag ID + output topic. Shares apriltag_ros + TF chain. -->
+  <node if="$(arg enable_goal_tracker)"
+        pkg="rl_envs_cube_tracker" type="tag_to_cube_pose.py"
+        name="tag_to_goal_pose" output="screen">
+    <param name="cube_tag_id"   value="$(arg goal_tag_id)"/>
+    <param name="target_frame"  value="$(arg target_frame)"/>
+    <param name="rate_limit_hz" value="$(arg rate_limit_hz)"/>
+    <remap from="~detections"   to="/tag_detections"/>
+    <remap from="~cube_pose"    to="$(arg goal_output_topic)"/>
   </node>
 
   <!-- Camera extrinsic TF: rx200/base_link → kinect2_rgb_optical_frame.
