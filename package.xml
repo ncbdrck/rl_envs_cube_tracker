@@ -6,7 +6,7 @@
     Real-side cube pose publisher for rl_environments push / PnP task envs.
     Wraps apriltag_ros and republishes the detected cube tag as a
     geometry_msgs/PoseStamped on /cube_pose (optionally TF-transformed into
-    the robot base frame). Robot-agnostic — works with RX200, NED2, UR5e.
+    the robot base frame). Robot-agnostic — works with RX200, NED2, VX300S, and UR5e.
   </description>
 
   <maintainer email="j.kapukotuwa@research.ait.ie">Jay Kapukotuwa</maintainer>
