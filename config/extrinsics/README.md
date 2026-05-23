@@ -18,12 +18,27 @@ serves both.
 Currently shipped:
 - `kinect2_to_rx200.yaml`
 - `kinect2_to_ned2.yaml`
+- `kinect2_to_vx300s.yaml`
+- `kinect2_to_ur5e.yaml`
 - `zed2_to_rx200.yaml`
 - `zed2_to_ned2.yaml`
+- `zed2_to_vx300s.yaml`
+- `zed2_to_ur5e.yaml`
 - `d405_to_rx200.yaml`   (Intel RealSense D405)
 - `d405_to_ned2.yaml`
+- `d405_to_vx300s.yaml`
+- `d405_to_ur5e.yaml`
 
-All values are placeholders — calibrate before use.
+All values are placeholders — calibrate before use. The vx300s files
+mirror the RX200 mount geometry (flush on the cafe-table, camera ~0.5 m
+in front + above). The UR5e files describe a different setup — the arm
+sits on a ~0.59 m base with a SEPARATE cafe-table at world (0.7, 0, 0),
+so the camera mounts past the table looking back; placeholder values
+match the standalone-launch URDF kinect pose.
+
+UR5e YAMLs use the BARE link name `base_link` as parent_frame because
+the UR5e URDF doesn't prefix link names (unlike Interbotix
+vx300s/base_link or RX200 rx200/base_link).
 
 ## File format
 

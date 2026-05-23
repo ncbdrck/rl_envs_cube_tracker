@@ -5,8 +5,10 @@ task envs. Wraps [`apriltag_ros`](https://github.com/AprilRobotics/apriltag_ros)
 and republishes the detected cube tag as a `geometry_msgs/PoseStamped` on
 `/cube_pose` — the topic the env subscribes to.
 
-Robot-agnostic. Same package works for RX200, NED2, UR5e — just point it at
-whichever camera you're using and (optionally) the robot's base frame.
+Robot-agnostic. Same package works for RX200, NED2, ViperX-300S, UR5e —
+just point it at whichever camera you're using and (optionally) the
+robot's base frame via `target_frame:=`. Per-robot extrinsic YAMLs
+live under `config/extrinsics/`.
 
 ## What it does
 
@@ -219,12 +221,9 @@ rl_envs_cube_tracker/
 │   ├── tags.yaml             # tag IDs + sizes (default: id 0, 30 mm)
 │   ├── settings.yaml         # apriltag detector params (tag36h11)
 │   └── extrinsics/           # per-camera-per-robot static TF YAMLs
-│       ├── kinect2_to_rx200.yaml
-│       ├── kinect2_to_ned2.yaml
-│       ├── zed2_to_rx200.yaml
-│       ├── zed2_to_ned2.yaml
-│       ├── d405_to_rx200.yaml
-│       ├── d405_to_ned2.yaml
+│       ├── kinect2_to_{rx200,ned2,vx300s,ur5e}.yaml
+│       ├── zed2_to_{rx200,ned2,vx300s,ur5e}.yaml
+│       ├── d405_to_{rx200,ned2,vx300s,ur5e}.yaml
 │       └── README.md         # calibration procedures
 └── scripts/
     ├── tag_to_cube_pose.py   # AprilTagDetectionArray → PoseStamped

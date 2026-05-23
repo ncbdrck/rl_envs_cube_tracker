@@ -1,0 +1,19 @@
+# Static transform: base_link → Intel RealSense D405 color optical frame.
+#
+# UR5e URDF uses BARE link names (no ur5e/ prefix).
+#
+# *** CALIBRATE BEFORE USING ON HARDWARE. ***
+# Placeholder for a D405 mounted past the cafe-table looking back.
+
+parent_frame: base_link
+child_frame:  camera_color_optical_frame
+
+translation:
+  x:  2.10
+  y: -0.08
+  z:  0.31
+
+rotation_rpy_deg:
+  roll:  -90.0
+  pitch:   0.0
+  yaw:    -90.0

@@ -1,0 +1,26 @@
+# Static transform: vx300s/base_link → kinect2 RGB optical frame.
+#
+# The cube tracker's adapter (tag_to_cube_pose.py) uses this transform
+# when target_frame=vx300s/base_link is requested: it lets the tracker
+# emit /cube_pose in the robot's base frame instead of the camera frame.
+#
+# *** CALIBRATE BEFORE USING ON HARDWARE. ***
+# Values below are RX200-style placeholders (kinect ~0.50 m in front of
+# and ~0.50 m above the arm base, tilted ~30° downward). vx300s is
+# flush-mounted on the cafe-table the same way RX200 is, so the
+# geometry is similar — but YOUR mount and YOUR table will differ.
+#
+# Calibration procedures: see config/extrinsics/README.md
+
+parent_frame: vx300s/base_link
+child_frame:  kinect2_rgb_optical_frame
+
+translation:
+  x:  0.50
+  y:  0.00
+  z:  0.50
+
+rotation_rpy_deg:
+  roll:  -90.0
+  pitch:   0.0
+  yaw:   -60.0

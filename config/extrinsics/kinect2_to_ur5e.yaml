@@ -1,0 +1,31 @@
+# Static transform: base_link → kinect2 RGB optical frame.
+#
+# UR5e URDF uses BARE link names (no ur5e/ prefix), unlike the
+# Interbotix robots' vx300s/base_link / rx200/base_link convention.
+#
+# The cube tracker's adapter uses this transform when
+# target_frame=base_link is requested; it lets the tracker emit
+# /cube_pose in the robot's base frame.
+#
+# *** CALIBRATE BEFORE USING ON HARDWARE. ***
+# UR5e geometry differs from RX200 / vx300s / NED2: the arm sits on
+# a ~0.59 m ur5_base and the workspace cafe-table is SEPARATE, at
+# world (0.7, 0, 0). The kinect typically mounts past the table
+# looking back toward the arm, so x is large and yaw is ~180°.
+#
+# Placeholder below matches the standalone-launch URDF kinect pose
+# (parent=world, xyz="2.1 -0.08 0.9" rpy="0 0.3 3.15"), expressed
+# in the base_link frame (kinect_world - arm_world). Calibrate.
+
+parent_frame: base_link
+child_frame:  kinect2_rgb_optical_frame
+
+translation:
+  x:  2.10
+  y: -0.08
+  z:  0.31    # 0.9 (kinect z_world) - 0.59 (arm base z_world)
+
+rotation_rpy_deg:
+  roll:  -90.0
+  pitch:   0.0
+  yaw:    -90.0   # kinect looking back toward the arm (-x in base frame)
