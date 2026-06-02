@@ -9,7 +9,7 @@
     the robot base frame). Robot-agnostic — works with RX200, NED2, VX300S, and UR5e.
   </description>
 
-  <maintainer email="j.kapukotuwa@research.ait.ie">Jay Kapukotuwa</maintainer>
+  <maintainer email="j.kapukotuwa@research.ait.ie">Jayasekara Kapukotuwa</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>catkin</buildtool_depend>
